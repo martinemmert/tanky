@@ -1,0 +1,11 @@
+{
+  "name": "tanky",
+  "version": "1.0.0",
+  "description": "Top down multiplayer shooter",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Martin Emmert <martin@martinemmert.de>",
+  "license": "ISC"
+}

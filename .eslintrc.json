@@ -1,0 +1,239 @@
+{
+  "env": {
+    "browser": true,
+    "es2020": true,
+    "node": true
+  },
+  "plugins": ["prettier", "node", "unicorn", "@typescript-eslint", "import"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:node/recommended",
+    "plugin:unicorn/recommended",
+    "prettier",
+    "plugin:import/typescript",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 11,
+    "sourceType": "module",
+    "project": "tsconfig.json"
+  },
+  "rules": {
+    // Override default configurations
+    "node/no-unsupported-features/es-syntax": [
+      "error",
+      {
+        "ignores": ["modules"]
+      }
+    ],
+    "node/no-missing-import": [
+      "error",
+      {
+        "tryExtensions": [".js", ".json", ".tsx", ".d.ts", ".ts"]
+      }
+    ],
+    "node/no-extraneous-import": [
+      "error",
+      {
+        "allowModules": ["react"]
+      }
+    ],
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "ignoreRestSiblings": true
+      }
+    ],
+    "import/namespace": [
+      "error",
+      {
+        "allowComputed": true
+      }
+    ],
+    "no-undef": ["error", { "typeof": true }],
+    "unicorn/prevent-abbreviations": [
+      "error",
+      {
+        "replacements": {
+          "props": false
+        },
+        "checkFilenames": false
+      }
+    ],
+    // Add additional rules
+    "@typescript-eslint/prefer-optional-chain": "error",
+    "@typescript-eslint/prefer-nullish-coalescing": "error",
+    "@typescript-eslint/prefer-for-of": "error",
+    "@typescript-eslint/no-base-to-string": "error",
+    "@typescript-eslint/no-extra-non-null-assertion": "error",
+    "@typescript-eslint/no-unnecessary-type-arguments": "error",
+    "@typescript-eslint/unified-signatures": "error",
+    "prettier/prettier": "error",
+    "unicorn/no-unsafe-regex": "error",
+    "unicorn/no-unused-properties": "error",
+    "array-callback-return": "error",
+    "capitalized-comments": [
+      "error",
+      "always",
+      {
+        "line": {
+          // Ignore all lines that have less characters than 10 and all lines that
+          // start with something that looks like a variable name or code.
+          "ignorePattern":
+            // eslint-disable-next-line max-len
+            ".{0,10}$|[a-z]+ ?[0-9A-Z_.(/=:[#-]|std|http|ssh|ftp|function|import|(let|var|const) [a-z_A-Z0-9]+ =|[b-z] |[a-z]*[0-9].* ",
+          "ignoreInlineComments": true,
+          "ignoreConsecutiveComments": true
+        },
+        "block": {
+          "ignorePattern": ".*"
+        }
+      }
+    ],
+    "comma-dangle": ["error", "always-multiline"],
+    "dot-notation": "error",
+    "eol-last": "error",
+    "eqeqeq": ["error", "smart"],
+    "func-name-matching": "error",
+    "func-style": ["error", "declaration", { "allowArrowFunctions": true }],
+    "linebreak-style": ["error", "unix"],
+    "max-len": [
+      "error",
+      {
+        "code": 120,
+        "ignoreRegExpLiterals": true,
+        "ignoreUrls": true
+      }
+    ],
+    "no-alert": "error",
+    "no-await-in-loop": "error",
+    "no-confusing-arrow": "error",
+    // TODO: Activate this rule when we switched to the logger. We use winston.
+    // "no-console": "error",
+    "no-constructor-return": "error",
+    "no-duplicate-imports": "error",
+    "no-else-return": [
+      "error",
+      {
+        "allowElseIf": false
+      }
+    ],
+    "no-extra-parens": [
+      "error",
+      "all",
+      {
+        "enforceForArrowConditionals": false,
+        "nestedBinaryExpressions": false
+      }
+    ],
+    "no-eval": "error",
+    "no-extend-native": "error",
+    "no-extra-bind": "error",
+    "no-floating-decimal": "error",
+    "no-implicit-coercion": "error",
+    "no-lonely-if": "error",
+    "no-mixed-requires": "error",
+    "no-multi-spaces": ["error", { "ignoreEOLComments": true }],
+    "no-multiple-empty-lines": [
+      "error",
+      { "max": 1, "maxEOF": 0, "maxBOF": 0 }
+    ],
+    "no-new-require": "error",
+    "no-new-func": "error",
+    "no-new-wrappers": "error",
+    "no-path-concat": "error",
+    "no-proto": "error",
+    "no-return-assign": "error",
+    "no-return-await": "error",
+    "no-self-compare": "error",
+    "no-sequences": "error",
+    "no-tabs": "error",
+    "no-template-curly-in-string": "error",
+    "no-throw-literal": "error",
+    "no-trailing-spaces": "error",
+    "no-undef-init": "error",
+    "@typescript-eslint/no-unused-expressions": "error",
+    "no-useless-computed-key": "error",
+    "no-useless-rename": "error",
+    "no-unmodified-loop-condition": "error",
+    "no-use-before-define": [
+      "error",
+      {
+        "classes": true,
+        "functions": false,
+        "variables": false
+      }
+    ],
+    "no-useless-call": "error",
+    "no-useless-concat": "error",
+    "no-useless-constructor": "error",
+    "no-useless-return": "error",
+    "no-void": "error",
+    "node/no-process-exit": "error",
+    "node/no-process-env": "error",
+    "object-shorthand": ["error", "always"],
+    "one-var": ["error", { "initialized": "never" }],
+    "one-var-declaration-per-line": "error",
+    "prefer-const": ["error", { "ignoreReadBeforeAssign": true }],
+    "prefer-destructuring": "error",
+    "prefer-numeric-literals": "error",
+    "prefer-regex-literals": "error",
+    "prefer-template": "error",
+    "rest-spread-spacing": "error",
+    "require-atomic-updates": "error",
+    "semi": "error",
+    "spaced-comment": [
+      "error",
+      "always",
+      {
+        "block": { "balanced": true },
+        "exceptions": ["-", "/"],
+        "markers": ["/"]
+      }
+    ],
+    "symbol-description": "error",
+    "template-curly-spacing": "error",
+    "unicode-bom": "error",
+    "yoda": "error",
+    // Deactivate rules that we do not want to use here.
+    "unicorn/filename-case": "off",
+    "@typescript-eslint/no-var-requires": "off",
+    "@typescript-eslint/explicit-function-return-type": "off"
+  },
+  "overrides": [
+    {
+      // Enable rules specifically for TypeScript files
+      "files": ["*.ts?(x)"],
+      "rules": {
+        "@typescript-eslint/no-var-requires": "error"
+      }
+    },
+    {
+      "files": ["*.@(j|t)sx"],
+      "rules": {
+        "max-len": "off",
+        "no-extra-parens": "off"
+      }
+    },
+    {
+      // Special handle test files.
+      "files": ["*.spec.@(j|t)s?(x)"],
+      "plugins": ["jest", "jest-dom", "jest-formatting"],
+      "extends": [
+        "plugin:jest-dom/recommended",
+        "plugin:jest/recommended",
+        "plugin:jest/style"
+      ],
+      "rules": {
+        "@typescript-eslint/no-var-requires": "off",
+        "node/no-extraneous-import": "off",
+        "node/no-unpublished-import": "off"
+      }
+    }
+  ]
+}

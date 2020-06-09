@@ -21,7 +21,8 @@
   "parserOptions": {
     "ecmaVersion": 11,
     "sourceType": "module",
-    "project": "tsconfig.json"
+    "project": "./tsconfig.json",
+    "createDefaultProgram": true
   },
   "rules": {
     // Override default configurations
@@ -231,6 +232,7 @@
       ],
       "rules": {
         "@typescript-eslint/no-var-requires": "off",
+        "@typescript-eslint/parser": "off",
         "node/no-extraneous-import": "off",
         "node/no-unpublished-import": "off"
       }

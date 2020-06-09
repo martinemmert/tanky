@@ -1,0 +1,10 @@
+node_modules/
+build/
+dist/
+coverage/
+__mocks__/
+**/generated/
+!.*.js
+jest.config.js
+jest.setup.js
+*.bundle.*

@@ -12,14 +12,22 @@
     "noErrorTruncation": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "outDir": "dist/",
     "pretty": true,
     "resolveJsonModule": true,
     "skipLibCheck": false,
     "sourceMap": true,
     "strict": true,
-    "target": "ES2018"
+    "target": "ES2018",
+    "outDir": "dist",
   },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "dist/",
+    "node_modules/",
+    "src/**/*.spec.ts"
+  ],
   "lib": [
     "DOM",
     "DOM.Iterable",

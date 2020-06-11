@@ -43,5 +43,8 @@
     "hooks": {
       "pre-commit": "lint-staged"
     }
+  },
+  "dependencies": {
+    "ecsy": "^0.2.6"
   }
 }

@@ -13,14 +13,11 @@ console.log("Hello World!");
 const SPEED_MULTIPLIER = 0.1;
 
 // Initialize canvas
-const root = document.querySelector("#root");
-if (!root) throw new Error("Missing #root element!");
-
 const canvas = document.createElement("canvas");
-canvas.width = 400;
-canvas.height = 300;
-
-root.append(canvas);
+canvas.setAttribute("style", "display: block");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+document.body.append(canvas);
 
 function createBoxEntity(world: World): void {
   world
@@ -57,7 +54,7 @@ const world = new World();
 world.registerSystem(MovableSystem);
 world.registerSystem(RenderSystem);
 
-world
+const canvasEntity = world
   .createEntity("Canvas")
   .addComponent(Canvas, { ctx: canvas.getContext("2d") })
   .addComponent(Dimensions, { width: canvas.width, height: canvas.height });
@@ -81,3 +78,9 @@ function run() {
 
 let lastTime = performance.now();
 run();
+
+window.addEventListener("resize", function () {
+  const dimensions = canvasEntity.getMutableComponent(Dimensions);
+  dimensions.width = canvas.width = window.innerWidth;
+  dimensions.height = canvas.height = window.innerHeight;
+});

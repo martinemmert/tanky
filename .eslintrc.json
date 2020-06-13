@@ -77,6 +77,7 @@
     "prettier/prettier": "error",
     "unicorn/no-unsafe-regex": "error",
     "unicorn/no-unused-properties": "error",
+    "unicorn/number-literal-case": 0,
     "array-callback-return": "error",
     "capitalized-comments": [
       "error",

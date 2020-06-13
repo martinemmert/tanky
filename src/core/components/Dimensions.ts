@@ -6,6 +6,11 @@ class Dimensions {
     this.width = width;
     this.height = height;
   }
+
+  reset(): void {
+    this.width = 0;
+    this.height = 0;
+  }
 }
 
 export default Dimensions;

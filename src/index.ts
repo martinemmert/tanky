@@ -1,23 +1,30 @@
 import { World } from "ecsy";
-import MovableSystem from "./core/systems/MovableSystem";
-import RenderSystem from "./core/systems/RenderSystem";
-import Velocity from "./core/components/Velocity";
-import Shape, { SHAPE_PRIMITIVE_TYPES } from "./core/components/Shape";
+import * as PIXI from "pixi.js";
+import Dimensions from "./core/components/Dimensions";
 import Position from "./core/components/Position";
 import Renderable from "./core/components/Renderable";
-import Canvas from "./core/components/Canvas";
-import Dimensions from "./core/components/Dimensions";
-
-console.log("Hello World!");
+import Shape, { SHAPE_PRIMITIVE_TYPES } from "./core/components/Shape";
+import Velocity from "./core/components/Velocity";
+import MovableSystem from "./core/systems/MovableSystem";
+import PixiRenderSystem from "./core/systems/PixiRenderSystem";
 
 const SPEED_MULTIPLIER = 0.1;
 
-// Initialize canvas
-const canvas = document.createElement("canvas");
-canvas.setAttribute("style", "display: block");
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-document.body.append(canvas);
+// Initialize pixi app
+const renderer = new PIXI.Renderer({
+  width: window.innerWidth,
+  height: window.innerHeight,
+});
+
+renderer.view.style.position = "absolute";
+renderer.view.style.display = "block";
+
+window.addEventListener("resize", () => {
+  // TODO: resize stage to correct resolution
+  renderer.resize(window.innerWidth, window.innerHeight);
+});
+
+document.body.append(renderer.view);
 
 function createBoxEntity(world: World): void {
   world
@@ -38,8 +45,8 @@ function getRandomVelocity() {
 
 function getRandomPosition() {
   return {
-    x: Math.random() * canvas.width,
-    y: Math.random() * canvas.height,
+    x: Math.random() * renderer.view.width,
+    y: Math.random() * renderer.view.height,
   };
 }
 
@@ -52,12 +59,7 @@ function getRandomDimensions() {
 
 const world = new World();
 world.registerSystem(MovableSystem);
-world.registerSystem(RenderSystem);
-
-const canvasEntity = world
-  .createEntity("Canvas")
-  .addComponent(Canvas, { ctx: canvas.getContext("2d") })
-  .addComponent(Dimensions, { width: canvas.width, height: canvas.height });
+world.registerSystem(PixiRenderSystem, { renderer });
 
 for (let i = 0; i < 200; i++) {
   createBoxEntity(world);
@@ -78,9 +80,3 @@ function run() {
 
 let lastTime = performance.now();
 run();
-
-window.addEventListener("resize", function () {
-  const dimensions = canvasEntity.getMutableComponent(Dimensions);
-  dimensions.width = canvas.width = window.innerWidth;
-  dimensions.height = canvas.height = window.innerHeight;
-});

@@ -1,6 +1,13 @@
-class Position {
-  public x = 0;
-  public y = 0;
+import { Component } from "ecsy";
+
+class Position extends Component {
+  x = 0;
+  y = 0;
+
+  copy(source: Position): void {
+    this.x = source.x;
+    this.y = source.y;
+  }
 
   reset(): void {
     this.x = 0;

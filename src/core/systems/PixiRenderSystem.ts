@@ -5,11 +5,13 @@ import Shape, { SHAPE_PRIMITIVE_TYPES } from "../components/Shape";
 import Position from "../components/Position";
 import Dimensions from "../components/Dimensions";
 import { Graphics, Container, Renderer } from "pixi.js";
+import Rotation from "../components/Rotation";
+import Center from "../components/Center";
 
 class PixiRenderSystem extends System {
   public static queries = {
     renderables: {
-      components: [Renderable, Shape, Position, Dimensions],
+      components: [Renderable, Shape, Position, Dimensions, Center],
       listen: {
         added: true,
         removed: true,
@@ -31,8 +33,6 @@ class PixiRenderSystem extends System {
     gfx.beginFill(0xf28d89, 1);
     gfx.drawRect(0, 0, dimensions.width, dimensions.height);
     gfx.endFill();
-    gfx.pivot.x = dimensions.width * 0.5;
-    gfx.pivot.y = dimensions.height * 0.5;
     return gfx;
   }
 
@@ -45,8 +45,6 @@ class PixiRenderSystem extends System {
     gfx.lineTo(0, dimensions.height);
     gfx.moveTo(halfWidth, 0);
     gfx.endFill();
-    gfx.pivot.x = dimensions.width * 0.5;
-    gfx.pivot.y = dimensions.height * 0.5;
     return gfx;
   }
 
@@ -71,11 +69,15 @@ class PixiRenderSystem extends System {
 
     renderablesQuery.results.forEach(renderable => {
       const position = renderable.getComponent(Position);
+      const rotation = renderable.getComponent(Rotation).value;
       const child = this.stage.getChildByName(`entity-${renderable.id}`);
       child.x = position.x;
       child.y = position.y;
+      child.rotation = rotation;
     });
 
+    // TODO: use SystemStateComponents for that
+    // https://ecsy.io/docs/#/manual/Architecture?id=components
     renderablesQuery.removed?.forEach(renderable => {
       const childName = `entity-${renderable.id}`;
       const child = this.stage.getChildByName(childName);

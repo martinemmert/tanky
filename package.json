@@ -47,6 +47,11 @@
   },
   "dependencies": {
     "ecsy": "^0.2.6",
-    "pixi.js": "^5.2.4"
+    "pixi.js": "^5.2.4",
+    "planck-js": "^0.3.18",
+    "planck-renderer": "^2.2.0"
+  },
+  "engines": {
+    "node": ">=12.0.0"
   }
 }

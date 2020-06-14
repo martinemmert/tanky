@@ -1,6 +1,5 @@
 import { World } from "ecsy";
 import * as PIXI from "pixi.js";
-import { World as B2World, Vec2 } from "planck-js";
 import Dimensions from "./core/components/Dimensions";
 import Position from "./core/components/Position";
 import Renderable from "./core/components/Renderable";
@@ -14,16 +13,11 @@ import Commands from "./core/components/Commands";
 import KeyboardSignals from "./core/signals/KeyboardSignals";
 import PlayerTankCommands from "./core/controll-maps/player-tank.json";
 import CommandBasedSteeringSystem from "./core/systems/CommandBasedSteeringSystem";
-import PhysicsWorldSystem from "./core/systems/PhysicsWorldSystem";
-import PhysicsBodySystem from "./core/systems/PhysicsBodySystem";
-import PhysicsShapeSystem from "./core/systems/PhysicsShapeSystem";
-import PhysicsShape from "./core/components/PhysicsShape";
-import PhysicsBody from "./core/components/PhysicsBody";
-import PhysicsFixture from "./core/components/PhysicsFixture";
-import PhysicsWorld from "./core/components/PhysicsWorld";
-import Rotation from "./core/components/Rotation";
 import Center from "./core/components/Center";
-import Renderer from "planck-renderer";
+import Rotation from "./core/components/Rotation";
+import MatterPhysicsSystem from "./core/systems/MatterPhysicsSystem";
+import MatterPhysics from "./core/components/MatterPhysics";
+import Matter from "matter-js";
 
 // const SPEED_MULTIPLIER = 0.1;
 
@@ -50,10 +44,8 @@ function createBoxEntity(world: World): void {
     .addComponent(Position, getRandomPosition())
     .addComponent(Rotation)
     .addComponent(Center)
+    .addComponent(MatterPhysics, { options: { restitution: 0.5 } })
     .addComponent(Dimensions, getRandomDimensions())
-    .addComponent(PhysicsBody, { isDynamic: true })
-    .addComponent(PhysicsShape)
-    .addComponent(PhysicsFixture)
     .addComponent(Renderable);
 }
 
@@ -63,23 +55,12 @@ function createPlayerEntity(world: World): void {
     .addComponent(Velocity)
     .addComponent(Shape, { primitive: SHAPE_PRIMITIVE_TYPES.TRIANGLE })
     .addComponent(Position, { x: 100, y: 100 })
-    .addComponent(Rotation)
     .addComponent(Center)
     .addComponent(Dimensions, { width: 50, height: 50 })
-    .addComponent(PhysicsBody, { isDynamic: true })
-    .addComponent(PhysicsShape)
-    .addComponent(PhysicsFixture)
     .addComponent(Renderable)
     .addComponent(PlayerControlled)
     .addComponent(Commands);
 }
-
-// function getRandomVelocity() {
-//   return {
-//     x: SPEED_MULTIPLIER * (2 * Math.random() - 1),
-//     y: SPEED_MULTIPLIER * (2 * Math.random() - 1),
-//   };
-// }
 
 function getRandomPosition() {
   return {
@@ -104,20 +85,10 @@ world.registerSystem(PlayerControllsSystem, {
 });
 world.registerSystem(CommandBasedSteeringSystem);
 // world.registerSystem(MovableSystem);
-world.registerSystem(PhysicsShapeSystem);
-world.registerSystem(PhysicsBodySystem);
-world.registerSystem(PhysicsWorldSystem);
+world.registerSystem(MatterPhysicsSystem);
 world.registerSystem(PixiRenderSystem, { renderer });
 
-const b2World = new B2World({
-  gravity: new Vec2(0, 10),
-});
-
-world.createEntity("PhysicsWorld").addComponent(PhysicsWorld, {
-  value: b2World,
-});
-
-for (let i = 0; i < 20; i++) {
+for (let i = 0; i < 5; i++) {
   createBoxEntity(world);
 }
 
@@ -127,12 +98,9 @@ world
   .createEntity()
   .addComponent(Shape, { primitive: SHAPE_PRIMITIVE_TYPES.BOX })
   .addComponent(Position, { x: window.innerWidth * 0.5, y: window.innerHeight - 100 })
-  .addComponent(Rotation)
   .addComponent(Center)
+  .addComponent(MatterPhysics, { options: { isStatic: true } })
   .addComponent(Dimensions, { width: window.innerWidth - 100, height: 20 })
-  .addComponent(PhysicsBody, { dynamic: false })
-  .addComponent(PhysicsShape)
-  .addComponent(PhysicsFixture)
   .addComponent(Renderable);
 
 const debugCanvas = document.createElement("canvas");
@@ -149,15 +117,23 @@ window.addEventListener("resize", () => {
 
 document.body.append(debugCanvas);
 
-const debugRenderer = new Renderer(b2World, debugCanvas.getContext("2d"), {
-  scale: 1,
-  strokeStyle: {
-    dynamic: "red",
-    static: "green",
-    kinematic: "blue",
+const sys = world.getSystem(MatterPhysicsSystem) as MatterPhysicsSystem;
+
+const debugRenderer = Matter.Render.create({
+  engine: sys.engine,
+  canvas: debugCanvas,
+  options: {
+    height: debugCanvas.height,
+    width: debugCanvas.width,
+    wireframes: true,
+    showDebug: true,
+    showVelocity: true,
+    showPositions: true,
+    showAxes: true,
   },
 });
 
+Matter.Render.run(debugRenderer);
 // Run!
 function run() {
   // Compute delta and elapsed time
@@ -166,7 +142,6 @@ function run() {
 
   // Run all the systems
   world.execute(delta, time);
-  debugRenderer.renderWorld();
   lastTime = time;
   requestAnimationFrame(run);
 }

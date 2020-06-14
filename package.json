@@ -16,6 +16,7 @@
   "devDependencies": {
     "@babel/core": "^7.10.2",
     "@types/jest": "^26.0.0",
+    "@types/matter-js": "^0.14.4",
     "@typescript-eslint/eslint-plugin": "^3.2.0",
     "@typescript-eslint/parser": "^3.2.0",
     "babel-jest": "^26.0.1",
@@ -47,9 +48,8 @@
   },
   "dependencies": {
     "ecsy": "^0.2.6",
-    "pixi.js": "^5.2.4",
-    "planck-js": "^0.3.18",
-    "planck-renderer": "^2.2.0"
+    "matter-js": "^0.14.2",
+    "pixi.js": "^5.2.4"
   },
   "engines": {
     "node": ">=12.0.0"

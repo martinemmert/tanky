@@ -69,11 +69,14 @@ class PixiRenderSystem extends System {
 
     renderablesQuery.results.forEach(renderable => {
       const position = renderable.getComponent(Position);
-      const rotation = renderable.getComponent(Rotation).value;
       const child = this.stage.getChildByName(`entity-${renderable.id}`);
       child.x = position.x;
       child.y = position.y;
-      child.rotation = rotation;
+
+      if (renderable.hasComponent(Rotation)) {
+        const rotation = renderable.getComponent(Rotation).value;
+        child.rotation = rotation;
+      }
     });
 
     // TODO: use SystemStateComponents for that

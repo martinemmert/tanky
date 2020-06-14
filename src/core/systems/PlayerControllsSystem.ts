@@ -9,7 +9,7 @@ type PlayerControllerAttributes = {
 };
 
 /* eslint-disable @typescript-eslint/unbound-method */
-class PlayerController extends System {
+class PlayerControllsSystem extends System {
   private keyboardSignals: KeyboardSignals;
   private currentCommands: Set<string> = new Set();
   private commandMap: Map<string, string>;
@@ -68,4 +68,4 @@ class PlayerController extends System {
   }
 }
 
-export default PlayerController;
+export default PlayerControllsSystem;

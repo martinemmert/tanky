@@ -7,6 +7,12 @@ import Shape, { SHAPE_PRIMITIVE_TYPES } from "./core/components/Shape";
 import Velocity from "./core/components/Velocity";
 import MovableSystem from "./core/systems/MovableSystem";
 import PixiRenderSystem from "./core/systems/PixiRenderSystem";
+import PlayerControllsSystem from "./core/systems/PlayerControllsSystem";
+import PlayerControlled from "./core/components/PlayerControlled";
+import Commands from "./core/components/Commands";
+import KeyboardSignals from "./core/signals/KeyboardSignals";
+import PlayerTankCommands from "./core/controll-maps/player-tank.json";
+import CommandBasedSteeringSystem from "./core/systems/CommandBasedSteeringSystem";
 
 const SPEED_MULTIPLIER = 0.1;
 
@@ -36,6 +42,18 @@ function createBoxEntity(world: World): void {
     .addComponent(Renderable);
 }
 
+function createPlayerEntity(world: World): void {
+  world
+    .createEntity("Player")
+    .addComponent(Velocity)
+    .addComponent(Shape, { primitive: SHAPE_PRIMITIVE_TYPES.TRIANGLE })
+    .addComponent(Position, { x: 100, y: 100 })
+    .addComponent(Dimensions, { width: 50, height: 50 })
+    .addComponent(Renderable)
+    .addComponent(PlayerControlled)
+    .addComponent(Commands);
+}
+
 function getRandomVelocity() {
   return {
     x: SPEED_MULTIPLIER * (2 * Math.random() - 1),
@@ -58,12 +76,21 @@ function getRandomDimensions() {
 }
 
 const world = new World();
+const keyboardSignals = new KeyboardSignals(window.document);
+
+world.registerSystem(PlayerControllsSystem, {
+  keyboardSignals,
+  commandMap: new Map(Object.entries(PlayerTankCommands)),
+});
+world.registerSystem(CommandBasedSteeringSystem);
 world.registerSystem(MovableSystem);
 world.registerSystem(PixiRenderSystem, { renderer });
 
 for (let i = 0; i < 200; i++) {
   createBoxEntity(world);
 }
+
+createPlayerEntity(world);
 
 // Run!
 function run() {
@@ -80,3 +107,4 @@ function run() {
 
 let lastTime = performance.now();
 run();
+keyboardSignals.start();

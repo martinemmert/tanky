@@ -2,5 +2,9 @@
   "ArrowUp": "ACCELERATE",
   "ArrowDown": "BREAK",
   "ArrowLeft": "TURN_LEFT",
-  "ArrowRight": "TURN_RIGHT"
+  "ArrowRight": "TURN_RIGHT",
+  "w": "UP",
+  "a": "LEFT",
+  "s": "DOWN",
+  "d": "RIGHT"
 }

@@ -1,12 +1,12 @@
 /* eslint-disable unicorn/prefer-node-remove */
 import { System, World } from "ecsy";
 import Renderable from "../components/Renderable";
-import Shape from "../components/Shape";
+import Shape, { SHAPE_PRIMITIVE_TYPES } from "../components/Shape";
 import Position from "../components/Position";
 import Dimensions from "../components/Dimensions";
 import { Graphics, Container, Renderer } from "pixi.js";
 
-class PixiSystem extends System {
+class PixiRenderSystem extends System {
   public static queries = {
     renderables: {
       components: [Renderable, Shape, Position, Dimensions],
@@ -26,17 +26,42 @@ class PixiSystem extends System {
     this.renderer = attributes.renderer;
   }
 
+  private static drawBox(dimensions: Dimensions) {
+    const gfx = new Graphics();
+    gfx.beginFill(0xf28d89, 1);
+    gfx.drawRect(0, 0, dimensions.width, dimensions.height);
+    gfx.endFill();
+    gfx.pivot.x = dimensions.width * 0.5;
+    gfx.pivot.y = dimensions.height * 0.5;
+    return gfx;
+  }
+
+  private static drawTriangle(dimensions: Dimensions) {
+    const gfx = new Graphics();
+    const halfWidth = dimensions.width * 0.5;
+    gfx.beginFill(0xff0000, 1);
+    gfx.moveTo(halfWidth, 0);
+    gfx.lineTo(dimensions.width, dimensions.height);
+    gfx.lineTo(0, dimensions.height);
+    gfx.moveTo(halfWidth, 0);
+    gfx.endFill();
+    gfx.pivot.x = dimensions.width * 0.5;
+    gfx.pivot.y = dimensions.height * 0.5;
+    return gfx;
+  }
+
   execute(): void {
     const renderablesQuery = this.queries.renderables;
 
     renderablesQuery.added?.forEach(renderable => {
       const dimensions = renderable.getComponent(Dimensions);
+      const shape = renderable.getComponent(Shape);
       const childName = `entity-${renderable.id}`;
-      const gfx = new Graphics();
+      const gfx =
+        shape.primitive === SHAPE_PRIMITIVE_TYPES.BOX
+          ? PixiRenderSystem.drawBox(dimensions)
+          : PixiRenderSystem.drawTriangle(dimensions);
       gfx.name = childName;
-      gfx.beginFill(0xf28d89, 1);
-      gfx.drawRect(0, 0, dimensions.width, dimensions.height);
-      gfx.endFill();
       gfx.pivot.x = dimensions.width * 0.5;
       gfx.pivot.y = dimensions.height * 0.5;
       gfx.cacheAsBitmap = true;
@@ -62,4 +87,4 @@ class PixiSystem extends System {
   }
 }
 
-export default PixiSystem;
+export default PixiRenderSystem;

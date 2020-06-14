@@ -1,0 +1,6 @@
+{
+  "ArrowUp": "ACCELERATE",
+  "ArrowDown": "BREAK",
+  "ArrowLeft": "TURN_LEFT",
+  "ArrowRight": "TURN_RIGHT"
+}

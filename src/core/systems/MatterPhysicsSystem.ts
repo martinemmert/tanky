@@ -1,15 +1,21 @@
-import { World, System } from "ecsy";
+import { World, System, Not } from "ecsy";
 import Matter from "matter-js";
-import MatterPhysics from "../components/MatterPhysics";
-import Shape from "../components/Shape";
-import Dimensions from "../components/Dimensions";
 import Position from "../components/Position";
 import Rotation from "../components/Rotation";
+import MatterBody from "../components/MatterBody";
+import MatterComposite from "../components/MatterComposite";
 
 export default class MatterPhysicsSystem extends System {
   static queries = {
-    physicEntities: {
-      components: [MatterPhysics, Shape, Dimensions, Position],
+    bodies: {
+      components: [MatterBody, Not(MatterComposite), Position],
+      listen: {
+        added: true,
+        removed: true,
+      },
+    },
+    composites: {
+      components: [Not(MatterBody), MatterComposite, Position],
       listen: {
         added: true,
         removed: true,
@@ -24,54 +30,54 @@ export default class MatterPhysicsSystem extends System {
   constructor(world: World) {
     super(world);
     this.engine = Matter.Engine.create();
+    this.engine.world.gravity.y = 0;
   }
 
   execute(delta: number): void {
-    const physicEntitiesQuery = this.queries.physicEntities;
-    const addedEntities = physicEntitiesQuery.added;
-    const removedEntities = physicEntitiesQuery.removed;
-    if (addedEntities?.length) {
-      const bodies = addedEntities.map(entity => {
-        const physicsComponent = entity.getMutableComponent(MatterPhysics);
-        const positionComponent = entity.getComponent(Position);
-        const dimensionsComponent = entity.getComponent(Dimensions);
-        physicsComponent.body = Matter.Bodies.rectangle(
-          positionComponent.x,
-          positionComponent.y,
-          dimensionsComponent.width,
-          dimensionsComponent.height,
-          physicsComponent.options,
-        );
-        return physicsComponent.body;
-      });
-      Matter.World.add(this.engine.world, bodies);
-    }
+    this.queries.bodies.added?.forEach(entity => {
+      const { body } = entity.getComponent(MatterBody);
+      const position = entity.getComponent(Position);
+      if (body) {
+        Matter.Body.translate(body, position);
+        Matter.World.add(this.engine.world, body);
+      }
+    });
 
-    if (removedEntities) {
-      const bodies = removedEntities
-        .map(entity => entity.getComponent(MatterPhysics).body)
-        .filter(Boolean) as Matter.Body[];
-      bodies.forEach(body => Matter.World.remove(this.engine.world, body));
-    }
+    this.queries.bodies.results.forEach(entity => {
+      const { body } = entity.getComponent(MatterBody);
+      const position = entity.getMutableComponent(Position);
+      if (body) {
+        position.x = body.position.x;
+        position.y = body.position.y;
+        if (entity.hasComponent(Rotation)) {
+          const rotation = entity.getComponent(Rotation);
+          rotation.value = body.angle;
+        }
+      }
+    });
+
+    this.queries.bodies.removed?.forEach(entity => {
+      const { body } = entity.getComponent(MatterBody);
+      if (body) Matter.World.remove(this.engine.world, body);
+    });
+
+    this.queries.composites.added?.forEach(entity => {
+      const { composite } = entity.getComponent(MatterComposite);
+      const position = entity.getComponent(Position);
+      if (composite) {
+        Matter.Composite.translate(composite, position);
+        Matter.World.add(this.engine.world, composite);
+      }
+    });
+
+    this.queries.composites.removed?.forEach(entity => {
+      const { composite } = entity.getComponent(MatterComposite);
+      if (composite) Matter.World.remove(this.engine.world, composite);
+    });
 
     // Update the simulation
     const timeCorrection = this.lastDelta ? delta / this.lastDelta : 1;
-    Matter.Engine.update(this.engine, delta, timeCorrection);
     this.lastDelta = delta;
-
-    // Update the entities
-    physicEntitiesQuery.results.forEach(entity => {
-      const physicsComponent = entity.getComponent(MatterPhysics);
-      const positionComponent = entity.getMutableComponent(Position);
-
-      if (!physicsComponent.body) return;
-      // Update position
-      positionComponent.x = physicsComponent.body.position.x;
-      positionComponent.y = physicsComponent.body.position.y;
-      // Update rotation if available
-      if (!entity.hasComponent(Rotation)) return;
-      const rotationComponent = entity.getMutableComponent(Rotation);
-      rotationComponent.value = physicsComponent.body.angle;
-    });
+    Matter.Engine.update(this.engine, delta, timeCorrection);
   }
 }

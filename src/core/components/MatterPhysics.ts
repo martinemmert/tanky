@@ -1,8 +1,8 @@
 import { Component } from "ecsy";
-import { Body, IChamferableBodyDefinition } from "matter-js";
+import { Body, Composite, IChamferableBodyDefinition } from "matter-js";
 
 export default class MatterPhysics extends Component {
-  public body?: Body;
+  public body?: Body | Composite;
   public options: IChamferableBodyDefinition = {};
 
   reset(): void {

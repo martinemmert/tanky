@@ -14,10 +14,15 @@ import KeyboardSignals from "./core/signals/KeyboardSignals";
 import PlayerTankCommands from "./core/controll-maps/player-tank.json";
 import CommandBasedSteeringSystem from "./core/systems/CommandBasedSteeringSystem";
 import Center from "./core/components/Center";
-import Rotation from "./core/components/Rotation";
+// import Rotation from "./core/components/Rotation";
 import MatterPhysicsSystem from "./core/systems/MatterPhysicsSystem";
-import MatterPhysics from "./core/components/MatterPhysics";
 import Matter from "matter-js";
+import CarSteering from "./core/components/CarSteering";
+import CommandCarSteeringSystem from "./core/systems/CommandCarSteeringSystem";
+import ApplyCarSteeringSystem from "./core/systems/ApplyCarSteeringSystem";
+import CarAcceleration from "./core/components/CarAcceleration";
+import MatterComposite from "./core/components/MatterComposite";
+import MatterBody from "./core/components/MatterBody";
 
 // const SPEED_MULTIPLIER = 0.1;
 
@@ -37,17 +42,17 @@ window.addEventListener("resize", () => {
 
 document.body.append(renderer.view);
 
-function createBoxEntity(world: World): void {
-  world
-    .createEntity()
-    .addComponent(Shape, { primitive: SHAPE_PRIMITIVE_TYPES.BOX })
-    .addComponent(Position, getRandomPosition())
-    .addComponent(Rotation)
-    .addComponent(Center)
-    .addComponent(MatterPhysics, { options: { restitution: 0.5 } })
-    .addComponent(Dimensions, getRandomDimensions())
-    .addComponent(Renderable);
-}
+// function createBoxEntity(world: World): void {
+//   world
+//     .createEntity()
+//     .addComponent(Shape, { primitive: SHAPE_PRIMITIVE_TYPES.BOX })
+//     .addComponent(Position, getRandomPosition())
+//     .addComponent(Rotation)
+//     .addComponent(Center)
+//     .addComponent(MatterPhysics, { options: { restitution: 0.5 } })
+//     .addComponent(Dimensions, getRandomDimensions())
+//     .addComponent(Renderable);
+// }
 
 function createPlayerEntity(world: World): void {
   world
@@ -57,24 +62,36 @@ function createPlayerEntity(world: World): void {
     .addComponent(Position, { x: 100, y: 100 })
     .addComponent(Center)
     .addComponent(Dimensions, { width: 50, height: 50 })
+    .addComponent(CarSteering)
+    .addComponent(CarAcceleration)
+    .addComponent(MatterComposite, {
+      options: { restitution: 0 },
+      composite: Matter.Composite.create({
+        bodies: [
+          Matter.Bodies.rectangle(-20, 0, 10, 20, { label: "left-wheel" }),
+          Matter.Bodies.rectangle(0, 0, 10, 10),
+          Matter.Bodies.rectangle(20, 0, 10, 20, { label: "right-wheel" }),
+        ],
+      }),
+    })
     .addComponent(Renderable)
     .addComponent(PlayerControlled)
     .addComponent(Commands);
 }
 
-function getRandomPosition() {
-  return {
-    x: Math.random() * renderer.view.width,
-    y: 0,
-  };
-}
+// function getRandomPosition() {
+//   return {
+//     x: Math.random() * renderer.view.width,
+//     y: 0,
+//   };
+// }
 
-function getRandomDimensions() {
-  return {
-    width: Math.random() * 100 + 10,
-    height: Math.random() * 100 + 10,
-  };
-}
+// function getRandomDimensions() {
+//   return {
+//     width: Math.random() * 100 + 10,
+//     height: Math.random() * 100 + 10,
+//   };
+// }
 
 const world = new World();
 const keyboardSignals = new KeyboardSignals(window.document);
@@ -85,22 +102,24 @@ world.registerSystem(PlayerControllsSystem, {
 });
 world.registerSystem(CommandBasedSteeringSystem);
 // world.registerSystem(MovableSystem);
+world.registerSystem(CommandCarSteeringSystem);
+world.registerSystem(ApplyCarSteeringSystem);
 world.registerSystem(MatterPhysicsSystem);
 world.registerSystem(PixiRenderSystem, { renderer });
 
-for (let i = 0; i < 5; i++) {
-  createBoxEntity(world);
-}
+// for (let i = 0; i < 5; i++) {
+//   createBoxEntity(world);
+// }
 
 createPlayerEntity(world);
 
 world
   .createEntity()
-  .addComponent(Shape, { primitive: SHAPE_PRIMITIVE_TYPES.BOX })
   .addComponent(Position, { x: window.innerWidth * 0.5, y: window.innerHeight - 100 })
-  .addComponent(Center)
-  .addComponent(MatterPhysics, { options: { isStatic: true } })
-  .addComponent(Dimensions, { width: window.innerWidth - 100, height: 20 })
+  .addComponent(MatterBody, {
+    options: { isStatic: true },
+    body: Matter.Bodies.rectangle(0, 0, window.innerWidth - 20, 20),
+  })
   .addComponent(Renderable);
 
 const debugCanvas = document.createElement("canvas");

@@ -49,7 +49,8 @@
   "dependencies": {
     "ecsy": "^0.2.6",
     "matter-js": "^0.14.2",
-    "pixi.js": "^5.2.4"
+    "pixi.js": "^5.2.4",
+    "planck-js": "^0.3.18"
   },
   "engines": {
     "node": ">=12.0.0"
